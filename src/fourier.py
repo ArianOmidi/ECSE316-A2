@@ -4,7 +4,6 @@ class FourierTransform:
   
   @staticmethod
   def DFT(x):
-    # make a numpy array
     x = np.asarray(x, dtype=complex)
     N = x.shape[0]
     
@@ -32,48 +31,35 @@ class FourierTransform:
   
   @staticmethod
   def DFT_2D(x):   
-    #TODO: refactor 
-    x = x.copy()
-    x_trans = x.transpose()
+    x = np.asarray(x, dtype=complex)
+    N, M = x.shape
     
-    x_col_transformed = np.asarray(x_trans, dtype=complex)
-    for n, col in enumerate(x_trans):
-        x_col_transformed[n] = FourierTransform.DFT(col)
-    x_col_transformed = x_col_transformed.transpose()
+    row_trans = np.zeros((N, M), dtype=complex)
+    for n in range(N):
+      row_trans[n] = FourierTransform.DFT(x[n])
     
-    x_transformed = np.asarray(x, dtype=complex)
-    for m, row in enumerate(x_col_transformed):
-        x_transformed[m] = FourierTransform.DFT(row)
-    return x_transformed
+    X_T = np.zeros((N, M), dtype=complex)
+    col_trans = row_trans.transpose()
+    for m in range(M):
+      X_T[m] = FourierTransform.DFT(col_trans[m])
+      
+    return X_T.transpose()
 
-    
   @staticmethod
   def inverseDFT_2D(X):
+    X = np.asarray(X, dtype=complex)
+    N, M = X.shape
     
-    a = np.asarray(a, dtype=complex)
-        N, M = a.shape
-        res = np.zeros((N, M), dtype=complex)
-
-        for k in range(N):
-            for l in range(M):
-                for m in range(M):
-                    for n in range(N):
-                        res[k, l] += a[n, m] * \
-                            np.exp(-2j * np.pi * ((l * m / M) + (k * n / N)))
-
-        return res
-      X = np.asarray(X, dtype=complex)
-      N = X.shape[0]
-      M = X.shape[1]
-      x = np.zeros(N, dtype=complex)
-
-      for n in range(N):
-          for k in range(N):
-              x[n] += X[k] * np.exp(2j * np.pi * k * n / N)
-
-          x[n] /= N
-
-      return x
+    row_trans = np.zeros((N, M), dtype=complex)
+    for n in range(N):
+      row_trans[n] = FourierTransform.inverseDFT(X[n])
+    
+    x_T = np.zeros((N, M), dtype=complex)
+    col_trans = row_trans.transpose()
+    for m in range(M):
+      x_T[m] = FourierTransform.inverseDFT(col_trans[m])
+      
+    return x_T.transpose()
   
   @staticmethod
   def FFT(x):
@@ -118,22 +104,34 @@ class FourierTransform:
   
   @staticmethod
   def FFT_2D(x):
-    x = x.copy()
-    x_trans = x.transpose()
+    x = np.asarray(x, dtype=complex)
+    N, M = x.shape
     
-    x_col_transformed = np.asarray(x_trans, dtype=complex)
-    for n, col in enumerate(x_trans):
-        x_col_transformed[n] = FourierTransform.FFT(col)
-    x_col_transformed = x_col_transformed.transpose()
+    row_trans = np.zeros((N, M), dtype=complex)
+    for n in range(N):
+      row_trans[n] = FourierTransform.FFT(x[n])
     
-    x_transformed = np.asarray(x, dtype=complex)
-    for m, row in enumerate(x_col_transformed):
-        x_transformed[m] = FourierTransform.FFT(row)
-    return x_transformed
-
+    X_T = np.zeros((N, M), dtype=complex)
+    col_trans = row_trans.transpose()
+    for m in range(M):
+      X_T[m] = FourierTransform.FFT(col_trans[m])
+      
+    return X_T.transpose()
   
-  def inverseFFT_2D(x):
-    return 0
+  def inverseFFT_2D(X):
+    X = np.asarray(X, dtype=complex)
+    N, M = X.shape
+    
+    row_trans = np.zeros((N, M), dtype=complex)
+    for n in range(N):
+      row_trans[n] = FourierTransform.inverseFFT(X[n])
+    
+    x_T = np.zeros((N, M), dtype=complex)
+    col_trans = row_trans.transpose()
+    for m in range(M):
+      x_T[m] = FourierTransform.inverseFFT(col_trans[m])
+      
+    return x_T.transpose()
   
   @staticmethod
   def test():
@@ -151,9 +149,9 @@ class FourierTransform:
           (FourierTransform.FFT, a, fft),
           (FourierTransform.inverseFFT, fft, a),
           (FourierTransform.DFT_2D, a2, fft2),
-          # (DFT.slow_two_dimension_inverse, fft2, a2),
+          (FourierTransform.inverseDFT_2D, fft2, a2),
           (FourierTransform.FFT_2D, a2, fft2),
-          # (DFT.fast_two_dimension_inverse, fft2, a2)
+          (FourierTransform.inverseFFT_2D, fft2, a2)
       )
 
       for method, args, expected in tests:
