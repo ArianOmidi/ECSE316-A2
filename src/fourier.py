@@ -1,13 +1,19 @@
 class FourierTransform: 
   
-  def discreteFT():
+  def DFT(x):
     return 0
   
-  def CT_FFT():
+  def DFT_2D(x):
     return 0
   
-  def TwoDDFT():
+  def FFT(x):
     return 0
   
-  def inverseTwoDDFT():
+  def FFT_2D(x):
+    return 0
+  
+  def inverseFFT(x):
+    return 0
+  
+  def inverseFFT_2D(x):
     return 0
