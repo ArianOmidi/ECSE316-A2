@@ -84,12 +84,11 @@ class FourierTransform:
 
     @staticmethod
     def inverseFFT(X):
-        """A recursive implementation of the 1D Cooley-Tukey IFFT"""
         X = np.asarray(X, dtype=complex)
         N = X.shape[0]
 
         if N % 2 > 0:
-            raise ValueError("size of x must be a power of 2")
+            raise ValueError("size of array must be a power of 2")
         elif N <= 32:  # this cutoff should be optimized
             return FourierTransform.inverseDFT(X)
         else:
@@ -120,6 +119,7 @@ class FourierTransform:
 
         return X_T.transpose()
 
+    @staticmethod
     def inverseFFT_2D(X):
         X = np.asarray(X, dtype=complex)
         N, M = X.shape
@@ -134,32 +134,3 @@ class FourierTransform:
             x_T[m] = FourierTransform.inverseFFT(col_trans[m])
 
         return x_T.transpose()
-
-    @staticmethod
-    def test():
-        # one dimension
-        a = np.random.random(1024)
-        fft = np.fft.fft(a)
-
-        # two dimensions
-        a2 = np.random.rand(32, 32)
-        fft2 = np.fft.fft2(a2)
-
-        tests = (
-            (FourierTransform.DFT, a, fft),
-            (FourierTransform.inverseDFT, fft, a),
-            (FourierTransform.FFT, a, fft),
-            (FourierTransform.inverseFFT, fft, a),
-            (FourierTransform.DFT_2D, a2, fft2),
-            (FourierTransform.inverseDFT_2D, fft2, a2),
-            (FourierTransform.FFT_2D, a2, fft2),
-            (FourierTransform.inverseFFT_2D, fft2, a2)
-        )
-
-        for method, args, expected in tests:
-            if not np.allclose(method(args), expected):
-                print(args)
-                print(method(args))
-                print(expected)
-                raise AssertionError(
-                    "{} failed the test".format(method.__name__))
