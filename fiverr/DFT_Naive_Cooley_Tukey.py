@@ -23,10 +23,12 @@ def dft_slow(x):
 def dft2_slow(x):
     x = x.copy()
     x_trans = x.transpose()
+
     x_col_transformed = np.asarray(x_trans, dtype=complex)
     for n, col in enumerate(x_trans):
         x_col_transformed[n] = dft_slow(col)
     x_col_transformed = x_col_transformed.transpose()
+
     x_transformed = np.asarray(x, dtype=complex)
     for m, row in enumerate(x_col_transformed):
         x_transformed[m] = dft_slow(row)
@@ -164,7 +166,8 @@ def compression_mode(img):
     size = os.path.getsize("original.npz")
     plt.figure(figsize=(15, 5))
     plt.subplot(231), plt.imshow(img, cmap="gray")
-    plt.title("Original, size={} bytes, non zeros={}".format(size, num_non_zeros)), plt.xticks([]), plt.yticks([])
+    plt.title("Original, size={} bytes, non zeros={}".format(
+        size, num_non_zeros)), plt.xticks([]), plt.yticks([])
     compression_factors = [30, 60, 80, 90, 95]
     index_count = 2
     for factor in compression_factors:
@@ -178,7 +181,8 @@ def compression_mode(img):
         size = os.path.getsize(file_name)
         back = inverse_dft2_fast(transformed).real
         plt.subplot(2, 3, index_count), plt.imshow(back, cmap="gray")
-        plt.title("@ {}%, size={} bytes, non zeros={}".format(factor, size, num_non_zeros)), plt.xticks([]), plt.yticks([])
+        plt.title("@ {}%, size={} bytes, non zeros={}".format(factor,
+                  size, num_non_zeros)), plt.xticks([]), plt.yticks([])
         print(factor, "%: num non zeros: ", num_non_zeros)
         index_count = index_count + 1
     plt.suptitle("Compression Levels", fontsize=22)
@@ -190,7 +194,8 @@ def runtime_mode():
     arr2 = np.random.random((2 ** 6, 2 ** 6))
     arr3 = np.random.random((2 ** 7, 2 ** 7))
     arr4 = np.random.random((2 ** 8, 2 ** 8))
-    array_dict = {'2^5 x 2^5': arr1, '2^6 x 2^6': arr2, '2^7 x 2^7': arr3, '2^8 x 2^8': arr4}
+    array_dict = {'2^5 x 2^5': arr1, '2^6 x 2^6': arr2,
+                  '2^7 x 2^7': arr3, '2^8 x 2^8': arr4}
 
     plt.figure(figsize=(15, 5))
     plt.title('Discrete Time Fourier Transform Runtime Analysis')
@@ -220,33 +225,38 @@ def runtime_mode():
             end = timer()
             fast_duration_readings.append(end - start)
 
-
         print('================  Slow Algorithm ========================')
         avg_slow_duration = sum(slow_duration_readings) / 10
         y_axis_slow.append(avg_slow_duration)
-        confidence_interval_slow.append(stats.stdev(slow_duration_readings) * 2)
+        confidence_interval_slow.append(
+            stats.stdev(slow_duration_readings) * 2)
         print("Slow Algorithm Mean: ", np.mean(slow_duration_readings))
         print("Slow Algorithm Variance: ", np.var(slow_duration_readings))
 
         print('================  Fast Algorithm ========================')
         avg_fast_duration = sum(fast_duration_readings) / 10
         y_axis_fast.append(avg_fast_duration)
-        confidence_interval_fast.append(stats.stdev(fast_duration_readings) * 2)
+        confidence_interval_fast.append(
+            stats.stdev(fast_duration_readings) * 2)
         print("Fast Algorithm Mean: ", np.mean(fast_duration_readings))
         print("Fast Algorithm Variance: ", np.var(fast_duration_readings))
         print('=========================================================')
 
     # Plot w/ Error Bars (Stdev * 2)
-    plt.errorbar(x=x_axis, y=y_axis_slow, yerr=confidence_interval_slow, label='naive')
-    plt.errorbar(x=x_axis, y=y_axis_fast, yerr=confidence_interval_fast, label='fast')
+    plt.errorbar(x=x_axis, y=y_axis_slow,
+                 yerr=confidence_interval_slow, label='naive')
+    plt.errorbar(x=x_axis, y=y_axis_fast,
+                 yerr=confidence_interval_fast, label='fast')
     plt.legend(loc='upper left', numpoints=1)
     plt.show()
 
 
 def main():
     parser = argparse.ArgumentParser(description='Compute Fourier Transforms')
-    parser.add_argument('-m', type=int, default=1, action='store', help='mode to be selected')
-    parser.add_argument('-i', type=str, default='Lenna_(test_image).png', action='store', help='image filename')
+    parser.add_argument('-m', type=int, default=1,
+                        action='store', help='mode to be selected')
+    parser.add_argument('-i', type=str, default='Lenna_(test_image).png',
+                        action='store', help='image filename')
 
     args = parser.parse_args()
     img = args.i
@@ -255,8 +265,10 @@ def main():
     img = cv2.imread(img, cv2.IMREAD_GRAYSCALE)
     width = len(img[0])
     height = len(img)
-    width = width if width == 2 ** (int(np.log2(width))) else 2 ** (int(np.log2(width)) + 1)
-    height = height if height == 2 ** (int(np.log2(height))) else 2 ** int((np.log2(height)) + 1)
+    width = width if width == 2 ** (int(np.log2(width))
+                                    ) else 2 ** (int(np.log2(width)) + 1)
+    height = height if height == 2 ** (int(np.log2(height))
+                                       ) else 2 ** int((np.log2(height)) + 1)
     img = cv2.resize(img, (width, height))
 
     if mode == 1:
