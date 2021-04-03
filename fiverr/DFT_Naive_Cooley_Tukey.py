@@ -267,7 +267,7 @@ def main():
         compression_mode(img)
     elif mode == 4:
         runtime_mode()
-    return
+    return 0
 
 
 if __name__ == "__main__":
